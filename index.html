@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>Editable Tow Invoice | Fairpy Inc</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #e5e7eb;
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 2rem 1rem;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    /* Form card - hidden during print */
+    .form-card {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 1.8rem;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.5rem;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #1e293b;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    input, textarea, select {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.8rem;
+      font-size: 0.95rem;
+      background: #f9fafb;
+      transition: 0.2s;
+      font-family: inherit;
+      width: 100%;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+      background: white;
+    }
+    .full-width {
+      grid-column: 1 / -1;
+    }
+    .inline-charges {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .inline-charges input {
+      flex: 1 1 150px;
+    }
+    button {
+      background: #0f172a;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.8rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      letter-spacing: 0.3px;
+    }
+    button:hover {
+      background: #1e293b;
+    }
+    .update-btn {
+      background: white;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+      box-shadow: none;
+      margin-top: 1.2rem;
+    }
+    .update-btn:hover {
+      background: #f1f5f9;
+    }
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+    }
+
+    /* INVOICE PREVIEW */
+    .invoice-preview {
+      background: white;
+      border-radius: 1.8rem;
+      padding: 2rem 2.2rem;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.15);
+      font-size: 0.9rem;
+      color: #1f2937;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 1.8rem;
+    }
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .logo-icon {
+      background: #0f172a;
+      color: white;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.3rem;
+      text-transform: uppercase;
+    }
+    .company-info {
+      font-size: 0.8rem;
+      color: #4b5563;
+      line-height: 1.4;
+    }
+    .invoice-title {
+      text-align: right;
+    }
+    .invoice-title h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #0f172a;
+      margin-bottom: 0.2rem;
+    }
+    .invoice-number, .dates {
+      font-weight: 500;
+    }
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin: 1.8rem 0;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 1.5rem;
+    }
+    .section-title {
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: #6b7280;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.3rem;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+    }
+    .detail-label {
+      font-weight: 500;
+      color: #4b5563;
+    }
+    .tow-details {
+      background: #f8fafc;
+      border-radius: 1rem;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+    }
+    .charges-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.2rem 0;
+    }
+    .charges-table th {
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #64748b;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #d1d5db;
+    }
+    .charges-table td {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .total-row {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .payment-notes-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 1.8rem;
+    }
+    .payment-methods {
+      background: #f1f5f9;
+      padding: 1rem;
+      border-radius: 0.9rem;
+      font-size: 0.85rem;
+    }
+    .signature-line {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      border-top: 1px solid #d1d5db;
+      padding-top: 1.2rem;
+      font-size: 0.8rem;
+      color: #4b5563;
+      font-weight: 500;
+    }
+    .footer-note {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.7rem;
+      color: #9ca3af;
+    }
+    hr {
+      border: 0.5px solid #e5e7eb;
+      margin: 1rem 0;
+    }
+    @media (max-width: 600px) {
+      .grid-2col, .payment-notes-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .invoice-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* PRINT STYLES - This is the key fix */
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+        margin: 0;
+      }
+      
+      /* Hide everything except the invoice preview */
+      .form-card,
+      .action-row,
+      .container > h3,
+      .container > p,
+      #updateInvoiceBtn,
+      #printBtn,
+      .no-print {
+        display: none !important;
+      }
+      
+      /* Reset container styles for print */
+      .container {
+        max-width: 100%;
+        width: 100%;
+        gap: 0;
+      }
+      
+      /* Style the invoice preview for clean printing */
+      .invoice-preview {
+        box-shadow: none;
+        border-radius: 0;
+        padding: 0.5in;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: visible;
+      }
+      
+      /* Ensure proper page breaks */
+      .invoice-preview {
+        page-break-after: avoid;
+        page-break-inside: avoid;
+      }
+      
+      /* Adjust font sizes for better print */
+      .invoice-preview {
+        font-size: 10pt;
+      }
+      
+      .invoice-title h2 {
+        font-size: 18pt;
+      }
+      
+      /* Remove background colors that might not print well */
+      .tow-details,
+      .payment-methods {
+        background: #f8fafc !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      
+      /* Ensure borders print properly */
+      .section-title {
+        border-bottom: 1px solid #e5e7eb !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- EDITABLE FORM -->
+  <div class="form-card">
+    <h3 style="margin-bottom:1.5rem; display: flex; align-items: center; gap:0.5rem;">📋 Invoice Data</h3>
+    <div class="form-grid" id="invoiceForm">
+      <div class="field-group">
+        <label>Invoice #</label>
+        <input type="text" id="invNumber" placeholder="INV-2026-01">
+      </div>
+      <div class="field-group">
+        <label>Date</label>
+        <input type="date" id="invDate" >
+      </div>
+      <div class="field-group">
+        <label>Due Date</label>
+        <input type="date" id="invDue">
+      </div>
+      <div class="field-group full-width">
+        <label>Company Info</label>
+        <input type="text" id="companyAddress" value="4425 W Airport Fwy, Irving TX 75062" placeholder="Address">
+      </div>
+      
+      <!-- Customer -->
+      <div class="field-group">
+        <label>Customer Name</label>
+        <input type="text" id="custName" >
+      </div>
+      <div class="field-group">
+        <label>Phone</label>
+        <input type="text" id="custPhone" >
+      </div>
+      <div class="field-group full-width">
+        <label>Address</label>
+        <input type="text" id="custAddress" >
+      </div>
+      
+      <!-- Vehicle -->
+      <div class="field-group">
+        <label>Year/Make/Model</label>
+        <input type="text" id="vehicleModel" >
+      </div>
+      <div class="field-group">
+        <label>Plate</label>
+        <input type="text" id="vehiclePlate" >
+      </div>
+      <div class="field-group">
+        <label>Color</label>
+        <input type="text" id="vehicleColor" >
+      </div>
+      
+      <!-- Tow details -->
+      <div class="field-group">
+        <label>Pickup Location</label>
+        <input type="text" id="pickup">
+      </div>
+      <div class="field-group">
+        <label>Drop-off</label>
+        <input type="text" id="dropoff" value="930 N Belt Line Rd, Suite 142, Irving, TX 75061">
+      </div>
+      <div class="field-group">
+        <label>Reason</label>
+        <input type="text" id="reason" value="Vehicle Breakdown">
+      </div>
+      <div class="field-group">
+        <label>Service Date</label>
+        <input type="date" id="serviceDate">
+      </div>
+      
+      <!-- Charges editable -->
+      <div class="full-width" style="margin-top:0.5rem;">
+        <label style="margin-bottom:0.5rem; display:block;">Charges</label>
+        <div class="inline-charges">
+          <input type="text" id="desc1" value="Towing Fee" placeholder="Description">
+          <input type="number" id="amount1" value="120.00" step="0.01" style="max-width:120px;">
+        </div>
+        <div class="inline-charges" style="margin-top:0.5rem;">
+          <input type="text" id="desc2" value="Fairtow Service Fee" placeholder="Description">
+          <input type="number" id="amount2" value="30.00" step="0.01" style="max-width:120px;">
+        </div>
+        <div style="margin-top:0.7rem; font-weight:600; text-align:right;" id="totalPreview">Total: $150.00</div>
+      </div>
+      
+      <!-- Payment & notes -->
+      <div class="field-group full-width">
+        <label>Payment methods (comma separated)</label>
+        <input type="text" id="paymentMethods" value="Zelle: hasnath@fairpy.com, Cash App: $Fairental, Pay Via Mobi/Turo/Stripe, Cash / Card">
+      </div>
+      <div class="field-group full-width">
+        <label>Notes</label>
+        <textarea id="notesText" rows="2" placeholder="Additional notes..."></textarea>
+      </div>
+    </div>
+    <div class="action-row">
+      <button id="updateInvoiceBtn" class="update-btn">↻ Refresh Invoice Preview</button>
+      <button id="printBtn">🖨️ Print Invoice Only</button>
+    </div>
+    <p style="font-size:0.75rem; color:#6b7280; margin-top:0.8rem;">Edit fields and click print — only the invoice will be printed.</p>
+  </div>
+
+  <!-- INVOICE PREVIEW (mirrors original layout) -->
+  <div class="invoice-preview" id="invoicePreview">
+    <!-- dynamically filled via JS -->
+  </div>
+  
+</div>
+
+<script>
+  (function() {
+    // Get DOM elements
+    const get = (id) => document.getElementById(id);
+
+    // Elements for form fields
+    const fields = {
+      invNumber: get('invNumber') ?? '',
+      invDate: get('invDate') ?? '',
+      invDue: get('invDue') ?? '',
+      companyAddress: get('companyAddress') ?? '',
+      custName: get('custName') ?? '',
+      custPhone: get('custPhone') ?? '',
+      custAddress: get('custAddress') ?? '',
+      vehicleModel: get('vehicleModel') ?? '',
+      vehiclePlate: get('vehiclePlate') ?? '',
+      vehicleColor: get('vehicleColor') ?? '',
+      pickup: get('pickup') ?? '',
+      dropoff: get('dropoff') ?? '',
+      reason: get('reason') ?? '',
+      serviceDate: get('serviceDate') ?? '',
+      desc1: get('desc1') ?? '',
+      note1: get('note1') ?? '',
+      amount1: get('amount1') ?? '',
+      desc2: get('desc2') ?? '',
+      note2: get('note2') ?? '',
+      amount2: get('amount2') ?? '',
+      paymentMethods: get('paymentMethods') ?? '',
+      notesText: get('notesText') ?? ''
+    };
+
+    const totalPreviewSpan = get('totalPreview');
+    const invoicePreviewDiv = get('invoicePreview');
+
+    // Helper to format currency
+    function formatMoney(value) {
+      let num = parseFloat(value);
+      if (isNaN(num)) num = 0;
+      return num.toFixed(2);
+    }
+
+    // Update total preview
+    function updateTotalPreview() {
+      const amt1 = parseFloat(fields.amount1.value) || 0;
+      const amt2 = parseFloat(fields.amount2.value) || 0;
+      const total = amt1 + amt2;
+      totalPreviewSpan.textContent = `Total: $${total.toFixed(2)}`;
+    }
+
+    // Attach input listeners to amount fields for live total
+    [fields.amount1, fields.amount2].forEach(input => {
+      input.addEventListener('input', updateTotalPreview);
+    });
+
+    // Build invoice HTML based on current form values
+    function generateInvoiceHTML() {
+      const amt1 = parseFloat(fields.amount1.value) || 0;
+      const amt2 = parseFloat(fields.amount2.value) || 0;
+      const totalDue = amt1 + amt2;
+      
+      const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const d = new Date(dateString);
+        // Add time to avoid timezone shift issues
+        const utcDate = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+        return utcDate.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+      };
+
+      const invDateFormatted = formatDate(fields.invDate.value);
+      const dueDateFormatted = formatDate(fields.invDue.value);
+      const serviceDateFormatted = formatDate(fields.serviceDate.value);
+
+      const paymentRaw = fields.paymentMethods.value || '';
+      const paymentLines = paymentRaw.split(',').map(s => s.trim()).filter(s => s.length > 0);
+      
+      const notesContent = fields.notesText.value || '';
+
+      // Build HTML structure mimicking original sample
+      return `
+        <div class="invoice-header">
+          <div class="logo-area">
+            <div class="logo-icon">
+                <img src="./Picture1.jpg" alt="">
+            </div>
+            <div class="company-info">
+              <strong>Fairpy Inc</strong><br>
+              ${escapeHtml(fields.companyAddress.value)}<br>
+              (214) 702-9736 | rental@fairpy.com
+            </div>
+          </div>
+          <div class="invoice-title">
+            <h2>TOW INVOICE</h2>
+            <div class="invoice-number"><strong>${escapeHtml(fields.invNumber.value)}</strong></div>
+            <div class="dates">Date: ${escapeHtml(invDateFormatted)}</div>
+            <div class="dates">Due: ${escapeHtml(dueDateFormatted)}</div>
+          </div>
+        </div>
+
+        <div class="grid-2col">
+          <div>
+            <div class="section-title">CUSTOMER</div>
+            <div class="detail-row"><span class="detail-label">Name</span> ${escapeHtml(fields.custName.value)}</div>
+            <div class="detail-row"><span class="detail-label">Phone</span> ${escapeHtml(fields.custPhone.value)}</div>
+            <div class="detail-row"><span class="detail-label">Address</span> ${escapeHtml(fields.custAddress.value)}</div>
+          </div>
+          <div>
+            <div class="section-title">VEHICLE</div>
+            <div class="detail-row"><span class="detail-label">Year/Make/Model</span> ${escapeHtml(fields.vehicleModel.value)}</div>
+            <div class="detail-row"><span class="detail-label">Plate</span> ${escapeHtml(fields.vehiclePlate.value)}</div>
+            <div class="detail-row"><span class="detail-label">Color</span> ${escapeHtml(fields.vehicleColor.value)}</div>
+          </div>
+        </div>
+
+        <div class="tow-details">
+          <div class="section-title" style="margin-top:0;">TOW DETAILS</div>
+          <div class="detail-row"><span class="detail-label">Pickup</span> ${escapeHtml(fields.pickup.value)}</div>
+          <div class="detail-row"><span class="detail-label">Drop-off</span> ${escapeHtml(fields.dropoff.value)}</div>
+          <div class="detail-row"><span class="detail-label">Reason</span> ${escapeHtml(fields.reason.value)}</div>
+          <div class="detail-row"><span class="detail-label">Service Date</span> ${escapeHtml(serviceDateFormatted)}</div>
+        </div>
+
+        <div class="section-title">CHARGES</div>
+        <table class="charges-table">
+          <thead><tr><th>Description</th><th>Note</th><th style="text-align:right;">Amount</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>${escapeHtml(fields.desc1.value)}</td>
+              <td>${escapeHtml(fields.note1.value)}</td>
+              <td style="text-align:right;">$${formatMoney(amt1)}</td>
+            </tr>
+            <tr>
+              <td>${escapeHtml(fields.desc2.value)}</td>
+              <td>${escapeHtml(fields.note2.value)}</td>
+              <td style="text-align:right;">$${formatMoney(amt2)}</td>
+            </tr>
+            <tr class="total-row">
+              <td colspan="2"><strong>TOTAL DUE</strong></td>
+              <td style="text-align:right;"><strong>$${totalDue.toFixed(2)}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="payment-notes-grid">
+          <div>
+            <div class="section-title">PAYMENT</div>
+            <div class="payment-methods">
+              ${paymentLines.map(line => `<div>✓ ${escapeHtml(line)}</div>`).join('')}
+            </div>
+          </div>
+          <div>
+            <div class="section-title">NOTES</div>
+            <div style="font-size:0.9rem; color:#374151;">${escapeHtml(notesContent) || '—'}</div>
+          </div>
+        </div>
+
+        <div class="signature-line">
+          <span>Fairpy Inc Representative</span>
+          <span>Customer Signature & Date</span>
+        </div>
+        <div class="footer-note">
+          Fairpy Inc • Irving, TX • (214) 702-9736 • claims@fairpy.com • www.fairental.com
+        </div>
+      `;
+    }
+
+    // simple escape
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderInvoice() {
+      if (invoicePreviewDiv) {
+        invoicePreviewDiv.innerHTML = generateInvoiceHTML();
+      }
+      updateTotalPreview();
+    }
+
+    // Event listeners
+    get('updateInvoiceBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      renderInvoice();
+    });
+
+    // Print functionality - now with better handling
+    get('printBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      // Update the preview first
+      renderInvoice();
+      
+      // Small delay to ensure DOM is updated before printing
+      setTimeout(() => {
+        window.print();
+      }, 100);
+    });
+
+    // Also update preview when any input changes
+    const allInputs = document.querySelectorAll('#invoiceForm input, #invoiceForm textarea');
+    allInputs.forEach(input => {
+      input.addEventListener('input', function() {
+        clearTimeout(window._renderTimeout);
+        window._renderTimeout = setTimeout(() => {
+          renderInvoice();
+        }, 200);
+      });
+    });
+
+    // Initial render
+    renderInvoice();
+    updateTotalPreview();
+  })();
+</script>
+</body>
+</html>
