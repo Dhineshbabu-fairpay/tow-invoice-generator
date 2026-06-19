@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>Editable Tow Invoice | Fairpy Inc</title>
+  <title>Editable Tow Invoice · Fairpy</title>
   <style>
     * {
       margin: 0;
@@ -36,23 +36,23 @@
     }
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
     }
     .field-group {
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
+      gap: 0.3rem;
     }
     label {
       font-weight: 600;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #1e293b;
       letter-spacing: 0.02em;
       text-transform: uppercase;
     }
     input, textarea, select {
-      padding: 0.7rem 1rem;
+      padding: 0.6rem 1rem;
       border: 1px solid #d1d5db;
       border-radius: 0.8rem;
       font-size: 0.95rem;
@@ -74,10 +74,14 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.8rem;
+      gap: 0.7rem;
     }
     .inline-charges input {
-      flex: 1 1 150px;
+      flex: 1 1 140px;
+    }
+    .inline-charges .small-input {
+      max-width: 100px;
+      flex: 0 1 100px;
     }
     button {
       background: #0f172a;
@@ -115,6 +119,28 @@
       justify-content: space-between;
       align-items: center;
       margin-top: 1.5rem;
+    }
+    .distance-grid {
+      background: #f1f5f9;
+      padding: 0.8rem 1rem;
+      border-radius: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.8rem 1.5rem;
+    }
+    .distance-grid span {
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #1e293b;
+    }
+    .distance-grid .badge {
+      background: #e2e8f0;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #0f172a;
     }
 
     /* INVOICE PREVIEW */
@@ -260,6 +286,14 @@
       border: 0.5px solid #e5e7eb;
       margin: 1rem 0;
     }
+    .distance-badge-inline {
+      background: #eef2ff;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1e3a8a;
+    }
     @media (max-width: 600px) {
       .grid-2col, .payment-notes-grid {
         grid-template-columns: 1fr;
@@ -271,15 +305,13 @@
       }
     }
 
-    /* PRINT STYLES - This is the key fix */
+    /* PRINT STYLES */
     @media print {
       body {
         background: white;
         padding: 0;
         margin: 0;
       }
-      
-      /* Hide everything except the invoice preview */
       .form-card,
       .action-row,
       .container > h3,
@@ -289,15 +321,11 @@
       .no-print {
         display: none !important;
       }
-      
-      /* Reset container styles for print */
       .container {
         max-width: 100%;
         width: 100%;
         gap: 0;
       }
-      
-      /* Style the invoice preview for clean printing */
       .invoice-preview {
         box-shadow: none;
         border-radius: 0;
@@ -307,31 +335,22 @@
         max-width: 100%;
         overflow-x: visible;
       }
-      
-      /* Ensure proper page breaks */
       .invoice-preview {
         page-break-after: avoid;
         page-break-inside: avoid;
       }
-      
-      /* Adjust font sizes for better print */
       .invoice-preview {
         font-size: 10pt;
       }
-      
       .invoice-title h2 {
         font-size: 18pt;
       }
-      
-      /* Remove background colors that might not print well */
       .tow-details,
       .payment-methods {
         background: #f8fafc !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-      
-      /* Ensure borders print properly */
       .section-title {
         border-bottom: 1px solid #e5e7eb !important;
         -webkit-print-color-adjust: exact;
@@ -343,20 +362,20 @@
 <body>
 <div class="container">
   <!-- EDITABLE FORM -->
-  <div class="form-card">
+  <div class="form-card no-print">
     <h3 style="margin-bottom:1.5rem; display: flex; align-items: center; gap:0.5rem;">📋 Invoice Data</h3>
     <div class="form-grid" id="invoiceForm">
       <div class="field-group">
         <label>Invoice #</label>
-        <input type="text" id="invNumber" placeholder="INV-2026-01">
+        <input type="text" id="invNumber" placeholder="INV-2026-01" value="INV-2026-101">
       </div>
       <div class="field-group">
         <label>Date</label>
-        <input type="date" id="invDate" >
+        <input type="date" id="invDate" value="2026-06-18">
       </div>
       <div class="field-group">
         <label>Due Date</label>
-        <input type="date" id="invDue">
+        <input type="date" id="invDue" value="2026-06-30">
       </div>
       <div class="field-group full-width">
         <label>Company Info</label>
@@ -366,35 +385,35 @@
       <!-- Customer -->
       <div class="field-group">
         <label>Customer Name</label>
-        <input type="text" id="custName" >
+        <input type="text" id="custName" value="Alex Rivera">
       </div>
       <div class="field-group">
         <label>Phone</label>
-        <input type="text" id="custPhone" >
+        <input type="text" id="custPhone" value="(214) 555-7890">
       </div>
       <div class="field-group full-width">
         <label>Address</label>
-        <input type="text" id="custAddress" >
+        <input type="text" id="custAddress" value="1234 Main St, Irving, TX 75060">
       </div>
       
       <!-- Vehicle -->
       <div class="field-group">
         <label>Year/Make/Model</label>
-        <input type="text" id="vehicleModel" >
+        <input type="text" id="vehicleModel" value="2022 Ford F-150">
       </div>
       <div class="field-group">
         <label>Plate</label>
-        <input type="text" id="vehiclePlate" >
+        <input type="text" id="vehiclePlate" value="TX-ABC123">
       </div>
       <div class="field-group">
         <label>Color</label>
-        <input type="text" id="vehicleColor" >
+        <input type="text" id="vehicleColor" value="Silver">
       </div>
       
       <!-- Tow details -->
       <div class="field-group">
         <label>Pickup Location</label>
-        <input type="text" id="pickup">
+        <input type="text" id="pickup" value="I-35 &amp; Royal Ln, Dallas">
       </div>
       <div class="field-group">
         <label>Drop-off</label>
@@ -406,21 +425,37 @@
       </div>
       <div class="field-group">
         <label>Service Date</label>
-        <input type="date" id="serviceDate">
+        <input type="date" id="serviceDate" value="2026-06-18">
       </div>
-      
-      <!-- Charges editable -->
+
+      <!-- Distance + automatic fee -->
+      <div class="field-group full-width">
+        <label style="margin-bottom:0.2rem;">🚛 Distance &amp; Towing Fee (auto-calc)</label>
+        <div class="distance-grid">
+          <span>Miles:</span>
+          <input type="number" id="towMiles" min="0" step="0.5" value="34" style="max-width:90px; padding:0.4rem 0.6rem;">
+          <span class="badge">0–10: $100</span>
+          <span class="badge">10–20: $150</span>
+          <span class="badge">20–30: $175</span>
+          <span class="badge">30–40: $230</span>
+          <span class="badge">40–50: $270</span>
+          <span style="font-weight:600; margin-left:auto;">Fee: $<span id="distanceFeeDisplay">230.00</span></span>
+        </div>
+      </div>
+
+      <!-- Charges editable (desc + amount) but amount1 will be overridden by distance fee if enabled -->
       <div class="full-width" style="margin-top:0.5rem;">
-        <label style="margin-bottom:0.5rem; display:block;">Charges</label>
+        <label style="margin-bottom:0.5rem; display:block;">Charges (edit descriptions &amp; extra fee)</label>
         <div class="inline-charges">
-          <input type="text" id="desc1" value="Towing Fee" placeholder="Description">
-          <input type="number" id="amount1" value="120.00" step="0.01" style="max-width:120px;">
+          <input type="text" id="desc1" value="Towing Fee (distance based)" placeholder="Description">
+          <input type="number" id="amount1" value="230.00" step="0.01" style="max-width:120px;" class="small-input">
+          <span style="font-size:0.7rem; color:#475569;">(auto-updates with miles)</span>
         </div>
         <div class="inline-charges" style="margin-top:0.5rem;">
           <input type="text" id="desc2" value="Fairtow Service Fee" placeholder="Description">
-          <input type="number" id="amount2" value="30.00" step="0.01" style="max-width:120px;">
+          <input type="number" id="amount2" value="30.00" step="0.01" style="max-width:120px;" class="small-input">
         </div>
-        <div style="margin-top:0.7rem; font-weight:600; text-align:right;" id="totalPreview">Total: $150.00</div>
+        <div style="margin-top:0.7rem; font-weight:600; text-align:right;" id="totalPreview">Total: $260.00</div>
       </div>
       
       <!-- Payment & notes -->
@@ -430,7 +465,7 @@
       </div>
       <div class="field-group full-width">
         <label>Notes</label>
-        <textarea id="notesText" rows="2" placeholder="Additional notes..."></textarea>
+        <textarea id="notesText" rows="2" placeholder="Additional notes...">Tow completed safely. Customer notified.</textarea>
       </div>
     </div>
     <div class="action-row">
@@ -440,7 +475,7 @@
     <p style="font-size:0.75rem; color:#6b7280; margin-top:0.8rem;">Edit fields and click print — only the invoice will be printed.</p>
   </div>
 
-  <!-- INVOICE PREVIEW (mirrors original layout) -->
+  <!-- INVOICE PREVIEW -->
   <div class="invoice-preview" id="invoicePreview">
     <!-- dynamically filled via JS -->
   </div>
@@ -449,71 +484,113 @@
 
 <script>
   (function() {
-    // Get DOM elements
     const get = (id) => document.getElementById(id);
 
-    // Elements for form fields
+    // DOM refs
     const fields = {
-      invNumber: get('invNumber') ?? '',
-      invDate: get('invDate') ?? '',
-      invDue: get('invDue') ?? '',
-      companyAddress: get('companyAddress') ?? '',
-      custName: get('custName') ?? '',
-      custPhone: get('custPhone') ?? '',
-      custAddress: get('custAddress') ?? '',
-      vehicleModel: get('vehicleModel') ?? '',
-      vehiclePlate: get('vehiclePlate') ?? '',
-      vehicleColor: get('vehicleColor') ?? '',
-      pickup: get('pickup') ?? '',
-      dropoff: get('dropoff') ?? '',
-      reason: get('reason') ?? '',
-      serviceDate: get('serviceDate') ?? '',
-      desc1: get('desc1') ?? '',
-      note1: get('note1') ?? '',
-      amount1: get('amount1') ?? '',
-      desc2: get('desc2') ?? '',
-      note2: get('note2') ?? '',
-      amount2: get('amount2') ?? '',
-      paymentMethods: get('paymentMethods') ?? '',
-      notesText: get('notesText') ?? ''
+      invNumber: get('invNumber'),
+      invDate: get('invDate'),
+      invDue: get('invDue'),
+      companyAddress: get('companyAddress'),
+      custName: get('custName'),
+      custPhone: get('custPhone'),
+      custAddress: get('custAddress'),
+      vehicleModel: get('vehicleModel'),
+      vehiclePlate: get('vehiclePlate'),
+      vehicleColor: get('vehicleColor'),
+      pickup: get('pickup'),
+      dropoff: get('dropoff'),
+      reason: get('reason'),
+      serviceDate: get('serviceDate'),
+      desc1: get('desc1'),
+      amount1: get('amount1'),
+      desc2: get('desc2'),
+      amount2: get('amount2'),
+      paymentMethods: get('paymentMethods'),
+      notesText: get('notesText'),
+      towMiles: get('towMiles')
     };
 
+    const distanceFeeDisplay = get('distanceFeeDisplay');
     const totalPreviewSpan = get('totalPreview');
     const invoicePreviewDiv = get('invoicePreview');
 
-    // Helper to format currency
+    // Distance fee lookup
+    function getDistanceFee(miles) {
+      const m = parseFloat(miles);
+      if (isNaN(m) || m < 0) return 0;
+      if (m <= 10) return 100;
+      if (m <= 20) return 150;
+      if (m <= 30) return 175;
+      if (m <= 40) return 230;
+      if (m <= 50) return 270;
+      return 270; // >50 stays 270 (can be adjusted)
+    }
+
     function formatMoney(value) {
       let num = parseFloat(value);
       if (isNaN(num)) num = 0;
       return num.toFixed(2);
     }
 
-    // Update total preview
-    function updateTotalPreview() {
-      const amt1 = parseFloat(fields.amount1.value) || 0;
+    // Update total preview + distance fee display
+    function updateTotals() {
+      const miles = parseFloat(fields.towMiles.value) || 0;
+      const fee = getDistanceFee(miles);
+      const amt1 = fee; // override amount1 with distance fee
       const amt2 = parseFloat(fields.amount2.value) || 0;
       const total = amt1 + amt2;
+      
+      // update amount1 field to reflect distance fee (keep editable but overridden)
+      fields.amount1.value = amt1.toFixed(2);
+      distanceFeeDisplay.textContent = amt1.toFixed(2);
       totalPreviewSpan.textContent = `Total: $${total.toFixed(2)}`;
     }
 
-    // Attach input listeners to amount fields for live total
-    [fields.amount1, fields.amount2].forEach(input => {
-      input.addEventListener('input', updateTotalPreview);
+    // attach listeners for miles & amount2
+    fields.towMiles.addEventListener('input', function() {
+      updateTotals();
+      // also re-render preview after short delay
+      scheduleRender();
+    });
+    fields.amount2.addEventListener('input', function() {
+      updateTotals();
+      scheduleRender();
     });
 
-    // Build invoice HTML based on current form values
+    // helper to schedule render
+    let renderTimeout;
+    function scheduleRender() {
+      clearTimeout(renderTimeout);
+      renderTimeout = setTimeout(() => {
+        renderInvoice();
+      }, 150);
+    }
+
+    // escape
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return '';
+      const d = new Date(dateString);
+      if (isNaN(d)) return '';
+      const utc = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+      return utc.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+    }
+
+    // Generate invoice HTML
     function generateInvoiceHTML() {
-      const amt1 = parseFloat(fields.amount1.value) || 0;
+      const miles = parseFloat(fields.towMiles.value) || 0;
+      const fee = getDistanceFee(miles);
       const amt2 = parseFloat(fields.amount2.value) || 0;
-      const totalDue = amt1 + amt2;
-      
-      const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const d = new Date(dateString);
-        // Add time to avoid timezone shift issues
-        const utcDate = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-        return utcDate.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
-      };
+      const totalDue = fee + amt2;
 
       const invDateFormatted = formatDate(fields.invDate.value);
       const dueDateFormatted = formatDate(fields.invDue.value);
@@ -521,16 +598,22 @@
 
       const paymentRaw = fields.paymentMethods.value || '';
       const paymentLines = paymentRaw.split(',').map(s => s.trim()).filter(s => s.length > 0);
-      
       const notesContent = fields.notesText.value || '';
 
-      // Build HTML structure mimicking original sample
+      // Build distance label for preview
+      let distanceLabel = `${miles} miles`;
+      let feeRange = '';
+      if (miles <= 10) feeRange = '(0–10 mi)';
+      else if (miles <= 20) feeRange = '(10–20 mi)';
+      else if (miles <= 30) feeRange = '(20–30 mi)';
+      else if (miles <= 40) feeRange = '(30–40 mi)';
+      else if (miles <= 50) feeRange = '(40–50 mi)';
+      else feeRange = '(>50 mi)';
+
       return `
         <div class="invoice-header">
           <div class="logo-area">
-            <div class="logo-icon">
-                <img src="./Picture1.jpg" alt="">
-            </div>
+            <div class="logo-icon"><img src="./Picture1.jpg" alt=""></div>
             <div class="company-info">
               <strong>Fairpy Inc</strong><br>
               ${escapeHtml(fields.companyAddress.value)}<br>
@@ -566,6 +649,10 @@
           <div class="detail-row"><span class="detail-label">Drop-off</span> ${escapeHtml(fields.dropoff.value)}</div>
           <div class="detail-row"><span class="detail-label">Reason</span> ${escapeHtml(fields.reason.value)}</div>
           <div class="detail-row"><span class="detail-label">Service Date</span> ${escapeHtml(serviceDateFormatted)}</div>
+          <div class="detail-row" style="margin-top:0.5rem; background:#eef2ff; padding:0.4rem 0.8rem; border-radius:30px;">
+            <span class="detail-label">📏 Distance</span>
+            <span><strong>${escapeHtml(distanceLabel)}</strong> <span class="distance-badge-inline">${escapeHtml(feeRange)}</span></span>
+          </div>
         </div>
 
         <div class="section-title">CHARGES</div>
@@ -574,12 +661,12 @@
           <tbody>
             <tr>
               <td>${escapeHtml(fields.desc1.value)}</td>
-              <td>${escapeHtml(fields.note1.value)}</td>
-              <td style="text-align:right;">$${formatMoney(amt1)}</td>
+              <td>${escapeHtml(feeRange)}</td>
+              <td style="text-align:right;">$${formatMoney(fee)}</td>
             </tr>
             <tr>
               <td>${escapeHtml(fields.desc2.value)}</td>
-              <td>${escapeHtml(fields.note2.value)}</td>
+              <td>—</td>
               <td style="text-align:right;">$${formatMoney(amt2)}</td>
             </tr>
             <tr class="total-row">
@@ -612,55 +699,39 @@
       `;
     }
 
-    // simple escape
-    function escapeHtml(text) {
-      return String(text)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
     function renderInvoice() {
       if (invoicePreviewDiv) {
         invoicePreviewDiv.innerHTML = generateInvoiceHTML();
       }
-      updateTotalPreview();
+      updateTotals();
     }
 
-    // Event listeners
+    // Event: update button
     get('updateInvoiceBtn').addEventListener('click', (e) => {
       e.preventDefault();
       renderInvoice();
     });
 
-    // Print functionality - now with better handling
+    // Print
     get('printBtn').addEventListener('click', (e) => {
       e.preventDefault();
-      // Update the preview first
       renderInvoice();
-      
-      // Small delay to ensure DOM is updated before printing
       setTimeout(() => {
         window.print();
-      }, 100);
+      }, 120);
     });
 
-    // Also update preview when any input changes
+    // Auto-update on any input
     const allInputs = document.querySelectorAll('#invoiceForm input, #invoiceForm textarea');
     allInputs.forEach(input => {
       input.addEventListener('input', function() {
-        clearTimeout(window._renderTimeout);
-        window._renderTimeout = setTimeout(() => {
-          renderInvoice();
-        }, 200);
+        scheduleRender();
       });
     });
 
-    // Initial render
+    // initial render
     renderInvoice();
-    updateTotalPreview();
+    updateTotals();
   })();
 </script>
 </body>
